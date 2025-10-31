@@ -11,7 +11,7 @@ Detailed guides available in:
 - 🇺🇸 [English](docs/README.en.md)
 - 🇰🇷 [한국어](docs/README.ko.md)
 
-📝 Blog Post: [Frontend Clean Architecture (with FSD & DDD)](https://lapidix.dev/posts/fsd-dd-clean-architecture)
+📝 Blog Post: [Frontend Clean Architecture (with FSD & DDD)](https://lapidix.dev/posts/fsd-ddd-clean-architecture)
 
 ## What This Project Demonstrates
 
