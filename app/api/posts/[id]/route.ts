@@ -1,5 +1,5 @@
 import { PostDto } from "@/entities/post";
-import { getRandomDate } from "@/shared/libs/date";
+import { getRandomDate } from "@/shared/utils/date";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(

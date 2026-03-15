@@ -1,5 +1,7 @@
-import { UserProfileDto } from "@/entities/user";
+import type { GetUserProfileQuery } from "../queries";
+import type { UserProfileResult } from "../results";
 
 export interface UserUseCase {
-  getUserProfile: () => Promise<UserProfileDto>;
+  getUserProfile: (query: GetUserProfileQuery) => Promise<UserProfileResult>;
+  getCurrentUserProfile: () => Promise<UserProfileResult>;
 }

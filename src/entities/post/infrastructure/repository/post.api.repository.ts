@@ -1,14 +1,14 @@
-import { PostAdapter } from "../api";
-import { PostMapper } from "../../mapper";
-import { ApiClient } from "@/shared/api";
+import { BaseHttpClient } from "@/shared/libs/http";
 import { PostRepository } from "../../core";
 import { Post } from "../../core/post.domain";
+import { PostMapper } from "../../mapper";
+import { PostAdapter } from "../api";
 
 export class PostApiRepository implements PostRepository {
   private api: ReturnType<typeof PostAdapter>;
 
-  constructor(apiClient: ApiClient) {
-    this.api = PostAdapter(apiClient);
+  constructor(httpClient: BaseHttpClient) {
+    this.api = PostAdapter(httpClient);
   }
 
   async getAll(limit: number, skip: number): Promise<Post[]> {

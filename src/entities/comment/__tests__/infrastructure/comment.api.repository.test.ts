@@ -1,4 +1,4 @@
-import { ApiClient } from "@/shared/api/base.api";
+import { BaseHttpClient } from "@/shared/libs/http";
 import { Pagination } from "@/shared/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Comment } from "../../core/comment.domain";
@@ -13,7 +13,7 @@ import { CommentFixtures } from "../fixtures/comment.fixtures";
  */
 describe("Comment API Repository", () => {
   let commentApiRepository: CommentApiRepository;
-  let mockApiClient: ApiClient;
+  let mockApiClient: BaseHttpClient;
   let validCommentDto: Required<CommentDto>;
   let validUserReference: UserReference;
 
@@ -25,7 +25,7 @@ describe("Comment API Repository", () => {
       put: vi.fn(),
       delete: vi.fn(),
       patch: vi.fn(),
-    } as unknown as ApiClient;
+    } as unknown as BaseHttpClient;
 
     commentApiRepository = new CommentApiRepository(mockApiClient);
 

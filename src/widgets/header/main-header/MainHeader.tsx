@@ -1,6 +1,6 @@
 "use client";
 import { UserAvatar } from "@/entities/user";
-import { useUserProfile } from "@/features/user";
+import { useCurrentUserProfile } from "@/features/user";
 import {
   Logo,
   MessageIcon,
@@ -10,7 +10,7 @@ import {
 import { Input } from "@/shared/ui/input";
 
 export const MainHeader = () => {
-  const { data: userProfile } = useUserProfile();
+  const { data: userProfile } = useCurrentUserProfile();
   if (!userProfile) return null;
 
   return (

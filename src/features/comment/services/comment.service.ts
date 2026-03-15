@@ -1,21 +1,34 @@
 import {
-  CommentDto,
   CommentFactory,
   CommentMapper,
   CommentRepository,
 } from "@/entities/comment";
 import { UserRepository } from "@/entities/user";
 import { BaseError } from "@/shared/libs/errors";
-import { CommentUseCase } from "../usecase/comment.usecase";
+import type {
+  AddCommentCommand,
+  DeleteCommentCommand,
+  LikeCommentCommand,
+  UnlikeCommentCommand,
+  UpdateCommentCommand,
+} from "../commands";
+import type { GetCommentByIdQuery, GetCommentsByPostIdQuery } from "../queries";
+import type { CommentListResult, CommentResult } from "../results";
+import type { CommentUseCase } from "../usecase";
 
 export const CommentService = (
   commentRepository: CommentRepository,
   userRepository: UserRepository
 ): CommentUseCase => ({
-  getAllComments: async (postId: string): Promise<CommentDto[]> => {
+  getAllComments: async (
+    query: GetCommentsByPostIdQuery
+  ): Promise<CommentListResult> => {
+    const { postId } = query;
     try {
       const domainComments = await commentRepository.getByPostId(postId);
-      return domainComments.map((comment) => CommentMapper.toDto(comment));
+      return domainComments.map((comment) =>
+        CommentMapper.toDto(comment)
+      ) as CommentListResult;
     } catch (error) {
       console.error(`Error fetching comments for post ID ${postId}:`, error);
       if (error instanceof BaseError) {
@@ -25,10 +38,13 @@ export const CommentService = (
     }
   },
 
-  getCommentById: async (id: string): Promise<CommentDto> => {
+  getCommentById: async (
+    query: GetCommentByIdQuery
+  ): Promise<CommentResult> => {
+    const { id } = query;
     try {
       const comment = await commentRepository.getById(id);
-      return CommentMapper.toDto(comment);
+      return CommentMapper.toDto(comment) as CommentResult;
     } catch (error) {
       console.error(`Error fetching comment with ID ${id}:`, error);
       if (error instanceof BaseError) {
@@ -38,13 +54,10 @@ export const CommentService = (
     }
   },
 
-  addComment: async (
-    body: string,
-    postId: string,
-    userId: string
-  ): Promise<CommentDto> => {
+  addComment: async (command: AddCommentCommand): Promise<CommentResult> => {
+    const { body, postId, userId } = command;
     try {
-      const user = await userRepository.getUserProfile();
+      const user = await userRepository.getUserProfile(userId);
 
       const newComment = CommentFactory.createNew(body, postId, {
         id: userId,
@@ -56,7 +69,7 @@ export const CommentService = (
 
       if (!savedComment) throw BaseError.createFailed("Comment");
 
-      return CommentMapper.toDto(savedComment);
+      return CommentMapper.toDto(savedComment) as CommentResult;
     } catch (error) {
       console.error(`Error creating comment:`, error);
       if (error instanceof BaseError) {
@@ -67,10 +80,9 @@ export const CommentService = (
   },
 
   updateComment: async (
-    id: string,
-    body: string,
-    userId: string
-  ): Promise<CommentDto> => {
+    command: UpdateCommentCommand
+  ): Promise<CommentResult> => {
+    const { id, body, userId } = command;
     try {
       const existingComment = await commentRepository.getById(id);
       if (!existingComment) {
@@ -88,7 +100,7 @@ export const CommentService = (
         throw BaseError.updateFailed("Comment", id);
       }
 
-      return CommentMapper.toDto(updatedComment);
+      return CommentMapper.toDto(updatedComment) as CommentResult;
     } catch (error) {
       console.error(`Error updating comment with ID ${id}:`, error);
       if (error instanceof BaseError) {
@@ -98,7 +110,8 @@ export const CommentService = (
     }
   },
 
-  deleteComment: async (id: string, userId: string): Promise<boolean> => {
+  deleteComment: async (command: DeleteCommentCommand): Promise<boolean> => {
+    const { id, userId } = command;
     try {
       const existingComment = await commentRepository.getById(id);
       if (!existingComment) {
@@ -124,7 +137,8 @@ export const CommentService = (
     }
   },
 
-  likeComment: async (id: string, userId: string): Promise<boolean> => {
+  likeComment: async (command: LikeCommentCommand): Promise<boolean> => {
+    const { id, userId } = command;
     try {
       return await commentRepository.like(id, userId);
     } catch (error) {
@@ -136,7 +150,8 @@ export const CommentService = (
     }
   },
 
-  unlikeComment: async (id: string, userId: string): Promise<boolean> => {
+  unlikeComment: async (command: UnlikeCommentCommand): Promise<boolean> => {
+    const { id, userId } = command;
     try {
       return await commentRepository.unlike(id, userId);
     } catch (error) {

@@ -3,13 +3,13 @@
 import { UserIdentifier } from "@/entities/user";
 import { CommentForm, CommentView } from "@/features/comment";
 import { useGetPostById } from "@/features/post";
-import { useUserProfile } from "@/features/user";
-import { formatDate } from "@/shared/libs/date";
+import { useCurrentUserProfile } from "@/features/user";
 import { CommentIcon, Divider, LikeIcon } from "@/shared/ui";
+import { formatDate } from "@/shared/utils/date";
 import Image from "next/image";
 
 export const PostDetailSection = ({ postId }: { postId: string }) => {
-  const { data: userProfile } = useUserProfile();
+  const { data: userProfile } = useCurrentUserProfile();
   const { data } = useGetPostById(postId);
   if (!userProfile || !data) return null;
   return (

@@ -1,4 +1,4 @@
-import { ApiClient } from "@/shared/api";
+import { BaseHttpClient } from "@/shared/libs/http";
 import { Pagination } from "@/shared/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Post } from "../../core";
@@ -12,7 +12,7 @@ import { UserReference } from "../../types";
  */
 describe("Post API Repository", () => {
   let postApiRepository: PostApiRepository;
-  let mockApiClient: ApiClient;
+  let mockApiClient: BaseHttpClient;
   let validPostDto: PostDto;
   let validUserReference: UserReference;
 
@@ -24,7 +24,7 @@ describe("Post API Repository", () => {
       put: vi.fn(),
       delete: vi.fn(),
       patch: vi.fn(),
-    } as unknown as ApiClient;
+    } as unknown as BaseHttpClient;
 
     postApiRepository = new PostApiRepository(mockApiClient);
 

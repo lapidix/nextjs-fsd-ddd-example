@@ -3,6 +3,7 @@ import { UserEntity } from "../../types";
 
 export interface MockUserRepository extends MockRepository<UserEntity> {
   getUserProfile: ReturnType<typeof vi.fn>;
+  getCurrentUserProfile: ReturnType<typeof vi.fn>;
   findByUsername: ReturnType<typeof vi.fn>;
   findByEmail: ReturnType<typeof vi.fn>;
   existsByUsername: ReturnType<typeof vi.fn>;
@@ -13,6 +14,7 @@ export const UserRepositoryMocks = {
   create: (): MockUserRepository => ({
     ...RepositoryMockFactory.createBasicMock<UserEntity>(),
     getUserProfile: vi.fn(),
+    getCurrentUserProfile: vi.fn(),
     findByUsername: vi.fn(),
     findByEmail: vi.fn(),
     existsByUsername: vi.fn(),
@@ -25,6 +27,7 @@ export const UserRepositoryMocks = {
   ): MockUserRepository => ({
     ...RepositoryMockFactory.createSuccessMock(mockUser, mockUsers),
     getUserProfile: vi.fn().mockResolvedValue(mockUser),
+    getCurrentUserProfile: vi.fn().mockResolvedValue(mockUser),
     findByUsername: vi.fn().mockResolvedValue(mockUser),
     findByEmail: vi.fn().mockResolvedValue(mockUser),
     existsByUsername: vi.fn().mockResolvedValue(true),
@@ -34,6 +37,7 @@ export const UserRepositoryMocks = {
   createNotFound: (): MockUserRepository => ({
     ...RepositoryMockFactory.createNotFoundMock<UserEntity>(),
     getUserProfile: vi.fn().mockResolvedValue(null),
+    getCurrentUserProfile: vi.fn().mockResolvedValue(null),
     findByUsername: vi.fn().mockResolvedValue(null),
     findByEmail: vi.fn().mockResolvedValue(null),
     existsByUsername: vi.fn().mockResolvedValue(false),
@@ -45,6 +49,7 @@ export const UserRepositoryMocks = {
   ): MockUserRepository => ({
     ...RepositoryMockFactory.createErrorMock<UserEntity>(error),
     getUserProfile: vi.fn().mockRejectedValue(error),
+    getCurrentUserProfile: vi.fn().mockRejectedValue(error),
     findByUsername: vi.fn().mockRejectedValue(error),
     findByEmail: vi.fn().mockRejectedValue(error),
     existsByUsername: vi.fn().mockRejectedValue(error),
@@ -54,6 +59,7 @@ export const UserRepositoryMocks = {
   createDuplicate: (mockUser: UserEntity): MockUserRepository => ({
     ...RepositoryMockFactory.createBasicMock<UserEntity>(),
     getUserProfile: vi.fn().mockResolvedValue(mockUser),
+    getCurrentUserProfile: vi.fn().mockResolvedValue(mockUser),
     findById: vi.fn().mockResolvedValue(mockUser),
     findAll: vi.fn().mockResolvedValue([mockUser]),
     findByUsername: vi.fn().mockResolvedValue(mockUser),

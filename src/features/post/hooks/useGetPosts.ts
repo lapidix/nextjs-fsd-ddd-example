@@ -1,12 +1,14 @@
 import { POST_QUERY_KEYS } from "@/entities/post";
 import { BaseError } from "@/shared/libs/errors";
 import { useQuery } from "@tanstack/react-query";
-import { GetPostsOptions, PostListResult } from "../types";
-import { PostUseCase } from "../usecase/post.usecase";
+import type { GetPostsQuery } from "../queries";
+import type { PostListResult } from "../results";
+import type { PostUseCase } from "../usecase/post.usecase";
 
 export const createUseGetPosts = (postUseCase: PostUseCase) => {
-  return (options: GetPostsOptions = {}) => {
+  return (options: GetPostsQuery = {}) => {
     const { limit = 10, skip = 0, query } = options;
+    const queryPayload: GetPostsQuery = { limit, skip, query };
 
     const isSearchQuery = !!query && query.length >= 2;
 
@@ -18,9 +20,9 @@ export const createUseGetPosts = (postUseCase: PostUseCase) => {
       queryFn: async () => {
         try {
           if (isSearchQuery && query) {
-            return await postUseCase.searchPosts(limit, skip, query);
+            return await postUseCase.searchPosts(queryPayload);
           }
-          return await postUseCase.getAllPosts(limit, skip);
+          return await postUseCase.getAllPosts(queryPayload);
         } catch (error) {
           if (error instanceof BaseError) {
             throw error;

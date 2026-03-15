@@ -1,10 +1,10 @@
-import { ApiClient } from "@/shared/api";
+import { BaseHttpClient } from "@/shared/libs/http";
 import { Pagination } from "@/shared/types";
 import { CommentDto } from "../dto/comment.dto";
 
-export const CommentAdapter = (apiClient: ApiClient) => ({
+export const CommentAdapter = (httpClient: BaseHttpClient) => ({
   listByPost: async (postId: string): Promise<Pagination<CommentDto>> => {
-    const response = await apiClient.get<Pagination<CommentDto>>(
+    const response = await httpClient.get<Pagination<CommentDto>>(
       `/posts/${postId}/comments`
     );
     return response.data;
@@ -12,7 +12,7 @@ export const CommentAdapter = (apiClient: ApiClient) => ({
 
   getById: async (id: string): Promise<CommentDto> => {
     try {
-      const response = await apiClient.get<CommentDto>(`/comments/${id}`);
+      const response = await httpClient.get<CommentDto>(`/comments/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching comment with ID ${id}:`, error);
@@ -26,7 +26,7 @@ export const CommentAdapter = (apiClient: ApiClient) => ({
     userId: string
   ): Promise<CommentDto> => {
     try {
-      const response = await apiClient.post<CommentDto>(`/comments/add`, {
+      const response = await httpClient.post<CommentDto>(`/comments/add`, {
         body,
         postId,
         userId,
@@ -40,7 +40,7 @@ export const CommentAdapter = (apiClient: ApiClient) => ({
 
   update: async (id: string, body: string): Promise<CommentDto> => {
     try {
-      const response = await apiClient.put<CommentDto>(`/comments/${id}`, {
+      const response = await httpClient.put<CommentDto>(`/comments/${id}`, {
         body,
       });
       return response.data;
@@ -52,7 +52,7 @@ export const CommentAdapter = (apiClient: ApiClient) => ({
 
   remove: async (id: string): Promise<boolean> => {
     try {
-      const response = await apiClient.delete<{ success: boolean }>(
+      const response = await httpClient.delete<{ success: boolean }>(
         `/comments/${id}`
       );
       return response.data.success;
@@ -64,7 +64,7 @@ export const CommentAdapter = (apiClient: ApiClient) => ({
 
   likeComment: async (id: string, userId: string): Promise<boolean> => {
     try {
-      const response = await apiClient.patch<{ success: boolean }>(
+      const response = await httpClient.patch<{ success: boolean }>(
         `/comments/${id}/like`,
         { userId }
       );
@@ -77,7 +77,7 @@ export const CommentAdapter = (apiClient: ApiClient) => ({
 
   unlikeComment: async (id: string, userId: string): Promise<boolean> => {
     try {
-      const response = await apiClient.patch<{ success: boolean }>(
+      const response = await httpClient.patch<{ success: boolean }>(
         `/comments/${id}/unlike`,
         { userId }
       );

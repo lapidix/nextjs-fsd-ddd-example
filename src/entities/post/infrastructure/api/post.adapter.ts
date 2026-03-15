@@ -1,11 +1,11 @@
-import { ApiClient } from "@/shared/api";
+import { BaseHttpClient } from "@/shared/libs/http";
 import { Pagination } from "@/shared/types";
 import { PostDto } from "../dto/post.dto";
 
-export const PostAdapter = (apiClient: ApiClient) => ({
+export const PostAdapter = (httpClient: BaseHttpClient) => ({
   list: async (limit: number, skip: number): Promise<Pagination<PostDto>> => {
     try {
-      const response = await apiClient.get<Pagination<PostDto>>(
+      const response = await httpClient.get<Pagination<PostDto>>(
         `/posts?limit=${limit}&skip=${skip}`
       );
       return response.data;
@@ -16,7 +16,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
   },
   search: async (searchQuery: string): Promise<Pagination<PostDto>> => {
     try {
-      const response = await apiClient.get<Pagination<PostDto>>(
+      const response = await httpClient.get<Pagination<PostDto>>(
         `/posts/search?q=${searchQuery}`
       );
       return response.data;
@@ -28,7 +28,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
 
   getById: async (id: string): Promise<PostDto> => {
     try {
-      const response = await apiClient.get<PostDto>(`/posts/${id}`);
+      const response = await httpClient.get<PostDto>(`/posts/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching post with ID ${id}:`, error);
@@ -42,7 +42,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
     userId: string
   ): Promise<PostDto> => {
     try {
-      const response = await apiClient.post<PostDto>(`/posts/add`, {
+      const response = await httpClient.post<PostDto>(`/posts/add`, {
         title,
         body,
         userId,
@@ -56,7 +56,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
 
   update: async (id: string, title: string, body: string): Promise<PostDto> => {
     try {
-      const response = await apiClient.put<PostDto>(`/posts/${id}`, {
+      const response = await httpClient.put<PostDto>(`/posts/${id}`, {
         title,
         body,
       });
@@ -69,7 +69,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
 
   remove: async (id: string): Promise<boolean> => {
     try {
-      const response = await apiClient.delete<{ success: boolean }>(
+      const response = await httpClient.delete<{ success: boolean }>(
         `/posts/${id}`
       );
       return response.ok;
@@ -81,7 +81,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
 
   likePost: async (id: string, userId: string): Promise<boolean> => {
     try {
-      const response = await apiClient.patch<{ success: boolean }>(
+      const response = await httpClient.patch<{ success: boolean }>(
         `/posts/${id}/like`,
         { userId }
       );
@@ -94,7 +94,7 @@ export const PostAdapter = (apiClient: ApiClient) => ({
 
   unlikePost: async (id: string, userId: string): Promise<boolean> => {
     try {
-      const response = await apiClient.patch<{ success: boolean }>(
+      const response = await httpClient.patch<{ success: boolean }>(
         `/posts/${id}/unlike`,
         { userId }
       );

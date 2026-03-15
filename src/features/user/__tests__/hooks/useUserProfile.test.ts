@@ -12,6 +12,7 @@ import { mockUserProfileData } from "../fixtures";
 describe("useUserProfile Hook", () => {
   let mockUserUseCase: {
     getUserProfile: ReturnType<typeof vi.fn>;
+    getCurrentUserProfile: ReturnType<typeof vi.fn>;
   };
   let useUserProfile: ReturnType<typeof createUseUserProfile>;
 
@@ -19,6 +20,7 @@ describe("useUserProfile Hook", () => {
     // Given: Set up mock use case and test data
     mockUserUseCase = {
       getUserProfile: vi.fn(),
+      getCurrentUserProfile: vi.fn(),
     };
 
     useUserProfile = createUseUserProfile(mockUserUseCase);
@@ -29,10 +31,11 @@ describe("useUserProfile Hook", () => {
       // Given: Valid user profile data from use case
       mockUserUseCase.getUserProfile.mockResolvedValue(mockUserProfileData);
 
-      // When: Hook is called to fetch user profile
-      const { result } = renderHook(() => useUserProfile(), {
-        wrapper: QueryWrapper,
-      });
+      // When: Hook is called with userId to fetch user profile
+      const { result } = renderHook(
+        () => useUserProfile(mockUserProfileData.id),
+        { wrapper: QueryWrapper }
+      );
 
       // Then: User profile should be fetched successfully
       await waitFor(() => {
@@ -40,7 +43,9 @@ describe("useUserProfile Hook", () => {
       });
 
       expect(result.current.data).toEqual(mockUserProfileData);
-      expect(mockUserUseCase.getUserProfile).toHaveBeenCalledWith();
+      expect(mockUserUseCase.getUserProfile).toHaveBeenCalledWith({
+        userId: mockUserProfileData.id,
+      });
     });
   });
 
@@ -50,10 +55,11 @@ describe("useUserProfile Hook", () => {
       const baseError = new BaseError("User not found", "NOT_FOUND");
       mockUserUseCase.getUserProfile.mockRejectedValue(baseError);
 
-      // When: Hook is called and use case throws BaseError
-      const { result } = renderHook(() => useUserProfile(), {
-        wrapper: QueryWrapper,
-      });
+      // When: Hook is called with userId and use case throws BaseError
+      const { result } = renderHook(
+        () => useUserProfile(mockUserProfileData.id),
+        { wrapper: QueryWrapper }
+      );
 
       // Then: BaseError should be propagated correctly
       await waitFor(() => {
@@ -68,10 +74,11 @@ describe("useUserProfile Hook", () => {
       const unknownError = new Error("Network error");
       mockUserUseCase.getUserProfile.mockRejectedValue(unknownError);
 
-      // When: Hook is called and use case throws generic error
-      const { result } = renderHook(() => useUserProfile(), {
-        wrapper: QueryWrapper,
-      });
+      // When: Hook is called with userId and use case throws generic error
+      const { result } = renderHook(
+        () => useUserProfile(mockUserProfileData.id),
+        { wrapper: QueryWrapper }
+      );
 
       // Then: Generic error should be wrapped in BaseError
       await waitFor(() => {
@@ -95,10 +102,11 @@ describe("useUserProfile Hook", () => {
           )
       );
 
-      // When: Hook is called with delayed response
-      const { result } = renderHook(() => useUserProfile(), {
-        wrapper: QueryWrapper,
-      });
+      // When: Hook is called with userId and delayed response
+      const { result } = renderHook(
+        () => useUserProfile(mockUserProfileData.id),
+        { wrapper: QueryWrapper }
+      );
 
       // Then: Loading state should be managed correctly
       expect(result.current.isLoading).toBe(true);

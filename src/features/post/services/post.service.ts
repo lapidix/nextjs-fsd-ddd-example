@@ -1,34 +1,34 @@
 import { CommentMapper, CommentRepository } from "@/entities/comment";
-import {
-  PostDto,
-  PostFactory,
-  PostMapper,
-  PostRepository,
-} from "@/entities/post";
+import { PostFactory, PostMapper, PostRepository } from "@/entities/post";
 import { UserRepository } from "@/entities/user";
 import { BaseError } from "@/shared/libs/errors";
-import { PostDetailResult, PostListResult } from "../types";
-import { PostUseCase } from "../usecase/post.usecase";
+import type {
+  AddPostCommand,
+  DeletePostCommand,
+  LikePostCommand,
+  UnlikePostCommand,
+  UpdatePostCommand,
+} from "../commands";
+import type { GetPostByIdQuery, GetPostsQuery } from "../queries";
+import type { PostDetailResult, PostListResult, PostResult } from "../results";
+import type { PostUseCase } from "../usecase/post.usecase";
 
 export const PostService = (
   postRepository: PostRepository,
   commentRepository: CommentRepository,
   userRepository: UserRepository
 ): PostUseCase => ({
-  getAllPosts: async (
-    limit?: number,
-    skip?: number
-  ): Promise<PostListResult> => {
+  getAllPosts: async (query: GetPostsQuery = {}): Promise<PostListResult> => {
+    const q = query ?? {};
+    const limit = q.limit ?? 10;
+    const skip = q.skip ?? 0;
     try {
-      const posts = await postRepository.getAll(
-        limit as number,
-        skip as number
-      );
+      const posts = await postRepository.getAll(limit, skip);
       return {
         data: PostMapper.toDtoList(posts),
         pagination: {
-          limit: limit || 10,
-          skip: skip || 0,
+          limit,
+          skip,
           total: posts.length,
         },
       };
@@ -41,18 +41,17 @@ export const PostService = (
     }
   },
 
-  searchPosts: async (
-    limit?: number,
-    skip?: number,
-    searchQuery?: string
-  ): Promise<PostListResult> => {
+  searchPosts: async (query: GetPostsQuery): Promise<PostListResult> => {
+    const limit = query.limit ?? 10;
+    const skip = query.skip ?? 0;
+    const searchQuery = query.query;
     try {
-      const posts = await postRepository.search(searchQuery as string);
+      const posts = await postRepository.search(searchQuery ?? "");
       return {
         data: PostMapper.toDtoList(posts),
         pagination: {
-          limit: limit || 10,
-          skip: skip || 0,
+          limit,
+          skip,
           total: posts.length,
         },
       };
@@ -68,7 +67,8 @@ export const PostService = (
     }
   },
 
-  getPostById: async (id: string): Promise<PostDetailResult> => {
+  getPostById: async (query: GetPostByIdQuery): Promise<PostDetailResult> => {
+    const { id } = query;
     try {
       const post = await postRepository.getById(id);
 
@@ -90,14 +90,10 @@ export const PostService = (
     }
   },
 
-  addPost: async (
-    title: string,
-    body: string,
-    userId: string,
-    image?: string
-  ): Promise<PostDto> => {
+  addPost: async (command: AddPostCommand): Promise<PostResult> => {
+    const { title, body, userId, image } = command;
     try {
-      const user = await userRepository.getUserProfile();
+      const user = await userRepository.getUserProfile(userId);
       if (!user) {
         throw BaseError.notFound("User", userId);
       }
@@ -128,11 +124,8 @@ export const PostService = (
     }
   },
 
-  updatePost: async (
-    id: string,
-    title: string,
-    body: string
-  ): Promise<PostDto> => {
+  updatePost: async (command: UpdatePostCommand): Promise<PostResult> => {
+    const { id, title, body } = command;
     try {
       const existingPost = await postRepository.getById(id);
       if (!existingPost) {
@@ -157,7 +150,8 @@ export const PostService = (
     }
   },
 
-  deletePost: async (id: string): Promise<boolean> => {
+  deletePost: async (command: DeletePostCommand): Promise<boolean> => {
+    const { id } = command;
     try {
       const existingPost = await postRepository.getById(id);
       if (!existingPost) {
@@ -174,14 +168,15 @@ export const PostService = (
     }
   },
 
-  likePost: async (id: string, userId: string): Promise<boolean> => {
+  likePost: async (command: LikePostCommand): Promise<boolean> => {
+    const { id, userId } = command;
     try {
       const existingPost = await postRepository.getById(id);
       if (!existingPost) {
         throw BaseError.notFound("Post", id);
       }
 
-      const user = await userRepository.getUserProfile();
+      const user = await userRepository.getUserProfile(userId);
       if (!user) {
         throw BaseError.notFound("User", userId);
       }
@@ -199,14 +194,15 @@ export const PostService = (
     }
   },
 
-  unlikePost: async (id: string, userId: string): Promise<boolean> => {
+  unlikePost: async (command: UnlikePostCommand): Promise<boolean> => {
+    const { id, userId } = command;
     try {
       const existingPost = await postRepository.getById(id);
       if (!existingPost) {
         throw BaseError.notFound("Post", id);
       }
 
-      const user = await userRepository.getUserProfile();
+      const user = await userRepository.getUserProfile(userId);
       if (!user) {
         throw BaseError.notFound("User", userId);
       }

@@ -1,15 +1,16 @@
-import { USER_QUERY_KEYS, UserProfileDto } from "@/entities/user";
+import { USER_QUERY_KEYS } from "@/entities/user";
 import { BaseError } from "@/shared/libs/errors";
 import { useQuery } from "@tanstack/react-query";
-import { UserUseCase } from "../usecase/user.usecase";
+import type { UserProfileResult } from "../results";
+import type { UserUseCase } from "../usecase/user.usecase";
 
 export const createUseUserProfile = (userUseCase: UserUseCase) => {
-  const useUserProfile = () => {
-    return useQuery<UserProfileDto>({
-      queryKey: USER_QUERY_KEYS.profile(),
+  const useUserProfile = (userId: string) => {
+    return useQuery<UserProfileResult>({
+      queryKey: [...USER_QUERY_KEYS.profileById(userId)],
       queryFn: async () => {
         try {
-          return await userUseCase.getUserProfile();
+          return await userUseCase.getUserProfile({ userId });
         } catch (error) {
           if (error instanceof BaseError) {
             throw error;

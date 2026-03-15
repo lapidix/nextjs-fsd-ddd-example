@@ -62,7 +62,7 @@ describe("Post Service", () => {
       mockPostRepository.getAll.mockResolvedValue(mockPosts);
 
       // When: Get all posts
-      const result = await postService.getAllPosts(10, 0);
+      const result = await postService.getAllPosts({ limit: 10, skip: 0 });
 
       // Then: Should return paginated post list
       expect(result).toEqual({
@@ -82,7 +82,7 @@ describe("Post Service", () => {
       mockPostRepository.getAll.mockResolvedValue(mockPosts);
 
       // When: Get all posts without parameters
-      const result = await postService.getAllPosts();
+      const result = await postService.getAllPosts({});
 
       // Then: Should use default pagination
       expect(result.pagination).toEqual({
@@ -90,10 +90,7 @@ describe("Post Service", () => {
         skip: 0,
         total: mockPosts.length,
       });
-      expect(mockPostRepository.getAll).toHaveBeenCalledWith(
-        undefined,
-        undefined
-      );
+      expect(mockPostRepository.getAll).toHaveBeenCalledWith(10, 0);
     });
 
     it("should handle empty post list", async () => {
@@ -101,7 +98,7 @@ describe("Post Service", () => {
       mockPostRepository.getAll.mockResolvedValue([]);
 
       // When: Get all posts
-      const result = await postService.getAllPosts();
+      const result = await postService.getAllPosts({});
 
       // Then: Should return empty paginated result
       expect(result).toEqual({
@@ -121,7 +118,7 @@ describe("Post Service", () => {
 
       // When: Get all posts
       // Then: Should re-throw the same BaseError
-      await expect(postService.getAllPosts()).rejects.toThrow(baseError);
+      await expect(postService.getAllPosts({})).rejects.toThrow(baseError);
     });
 
     it("should wrap generic error in BaseError", async () => {
@@ -131,8 +128,8 @@ describe("Post Service", () => {
 
       // When: Get all posts
       // Then: Should wrap error in BaseError
-      await expect(postService.getAllPosts()).rejects.toThrow(BaseError);
-      await expect(postService.getAllPosts()).rejects.toThrow(
+      await expect(postService.getAllPosts({})).rejects.toThrow(BaseError);
+      await expect(postService.getAllPosts({})).rejects.toThrow(
         "Failed to fetch post list"
       );
     });
@@ -146,7 +143,7 @@ describe("Post Service", () => {
       mockPostRepository.search.mockResolvedValue(mockPosts);
 
       // When: Search posts
-      const result = await postService.searchPosts(10, 0, searchQuery);
+      const result = await postService.searchPosts({ limit: 10, skip: 0, query: searchQuery });
 
       // Then: Should return search results
       expect(result).toEqual({
@@ -165,7 +162,11 @@ describe("Post Service", () => {
       mockPostRepository.search.mockResolvedValue([]);
 
       // When: Search posts
-      const result = await postService.searchPosts(10, 0, "nonexistent");
+      const result = await postService.searchPosts({
+        limit: 10,
+        skip: 0,
+        query: "nonexistent",
+      });
 
       // Then: Should return empty search results
       expect(result.data).toEqual([]);
@@ -180,10 +181,10 @@ describe("Post Service", () => {
 
       // When: Search posts
       // Then: Should wrap error with query information
-      await expect(postService.searchPosts(10, 0, searchQuery)).rejects.toThrow(
+      await expect(postService.searchPosts({ limit: 10, skip: 0, query: searchQuery })).rejects.toThrow(
         BaseError
       );
-      await expect(postService.searchPosts(10, 0, searchQuery)).rejects.toThrow(
+      await expect(postService.searchPosts({ limit: 10, skip: 0, query: searchQuery })).rejects.toThrow(
         `Failed to search posts with query "${searchQuery}"`
       );
     });
@@ -198,7 +199,8 @@ describe("Post Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue(mockComments);
 
       // When: Get post by ID
-      const result = await postService.getPostById(mockPost.id);
+      const result = await postService.getPostById({
+        id: mockPost.id });
 
       // Then: Should return post with comments
       expect(result).toEqual({
@@ -218,8 +220,10 @@ describe("Post Service", () => {
 
       // When: Get post by ID
       // Then: Should throw NotFoundError
-      await expect(postService.getPostById(postId)).rejects.toThrow(BaseError);
-      await expect(postService.getPostById(postId)).rejects.toThrow(
+      await expect(postService.getPostById({
+        id: postId })).rejects.toThrow(BaseError);
+      await expect(postService.getPostById({
+        id: postId })).rejects.toThrow(
         `Post with ID ${postId} not found`
       );
     });
@@ -231,7 +235,8 @@ describe("Post Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue([]);
 
       // When: Get post by ID
-      const result = await postService.getPostById(mockPost.id);
+      const result = await postService.getPostById({
+        id: mockPost.id });
 
       // Then: Should return post with empty comments array
       expect(result.comments).toEqual([]);
@@ -245,8 +250,10 @@ describe("Post Service", () => {
 
       // When: Get post by ID
       // Then: Should wrap as NotFoundError
-      await expect(postService.getPostById(postId)).rejects.toThrow(BaseError);
-      await expect(postService.getPostById(postId)).rejects.toThrow(
+      await expect(postService.getPostById({
+        id: postId })).rejects.toThrow(BaseError);
+      await expect(postService.getPostById({
+        id: postId })).rejects.toThrow(
         `Post with ID ${postId} not found`
       );
     });
@@ -267,7 +274,12 @@ describe("Post Service", () => {
       mockPostRepository.create.mockResolvedValue(mockCreatedPost);
 
       // When: Add new post
-      const result = await postService.addPost(title, body, userId, image);
+      const result = await postService.addPost({
+        title,
+        body,
+        userId,
+        image,
+      });
 
       // Then: Should create and return new post
       expect(result).toEqual(PostMapper.toDto(mockCreatedPost));
@@ -288,7 +300,7 @@ describe("Post Service", () => {
       mockPostRepository.create.mockResolvedValue(mockCreatedPost);
 
       // When: Add new post without image
-      const result = await postService.addPost(title, body, userId);
+      const result = await postService.addPost({ title, body, userId });
 
       // Then: Should create post without image
       expect(result).toEqual(PostMapper.toDto(mockCreatedPost));
@@ -302,10 +314,18 @@ describe("Post Service", () => {
       // When: Add new post
       // Then: Should throw NotFoundError for user
       await expect(
-        postService.addPost("Title", "Body", userId)
+        postService.addPost({
+        title: "Title",
+        body: "Body",
+        userId,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.addPost("Title", "Body", userId)
+        postService.addPost({
+        title: "Title",
+        body: "Body",
+        userId,
+      })
       ).rejects.toThrow(`User with ID ${userId} not found`);
     });
 
@@ -318,10 +338,18 @@ describe("Post Service", () => {
       // When: Add new post
       // Then: Should throw CreateFailedError
       await expect(
-        postService.addPost("Title", "Body", mockUser.id)
+        postService.addPost({
+        title: "Title",
+        body: "Body",
+        userId: mockUser.id,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.addPost("Title", "Body", mockUser.id)
+        postService.addPost({
+        title: "Title",
+        body: "Body",
+        userId: mockUser.id,
+      })
       ).rejects.toThrow("Failed to create post");
     });
 
@@ -335,10 +363,18 @@ describe("Post Service", () => {
       // When: Add new post
       // Then: Should wrap as CreateFailedError
       await expect(
-        postService.addPost("Title", "Body", mockUser.id)
+        postService.addPost({
+        title: "Title",
+        body: "Body",
+        userId: mockUser.id,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.addPost("Title", "Body", mockUser.id)
+        postService.addPost({
+        title: "Title",
+        body: "Body",
+        userId: mockUser.id,
+      })
       ).rejects.toThrow("Failed to create post");
     });
   });
@@ -363,11 +399,11 @@ describe("Post Service", () => {
       mockPostRepository.update.mockResolvedValue(updatedPost);
 
       // When: Update post
-      const result = await postService.updatePost(
-        mockPost.id,
-        newTitle,
-        newBody
-      );
+      const result = await postService.updatePost({
+        id: mockPost.id,
+        title: newTitle,
+        body: newBody,
+      });
 
       // Then: Should update and return post
       expect(result).toEqual(PostMapper.toDto(updatedPost));
@@ -385,10 +421,18 @@ describe("Post Service", () => {
       // When: Update post
       // Then: Should throw NotFoundError
       await expect(
-        postService.updatePost(postId, "Title", "Body")
+        postService.updatePost({
+        id: postId,
+        title: "Title",
+        body: "Body",
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.updatePost(postId, "Title", "Body")
+        postService.updatePost({
+        id: postId,
+        title: "Title",
+        body: "Body",
+      })
       ).rejects.toThrow(`Post with ID ${postId} not found`);
     });
 
@@ -401,10 +445,18 @@ describe("Post Service", () => {
       // When: Update post
       // Then: Should throw UpdateFailedError
       await expect(
-        postService.updatePost(mockPost.id, "Title", "Body")
+        postService.updatePost({
+        id: mockPost.id,
+        title: "Title",
+        body: "Body",
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.updatePost(mockPost.id, "Title", "Body")
+        postService.updatePost({
+        id: mockPost.id,
+        title: "Title",
+        body: "Body",
+      })
       ).rejects.toThrow(`Failed to update post with ID ${mockPost.id}`);
     });
 
@@ -418,10 +470,18 @@ describe("Post Service", () => {
       // When: Update post
       // Then: Should wrap as UpdateFailedError
       await expect(
-        postService.updatePost(mockPost.id, "Title", "Body")
+        postService.updatePost({
+        id: mockPost.id,
+        title: "Title",
+        body: "Body",
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.updatePost(mockPost.id, "Title", "Body")
+        postService.updatePost({
+        id: mockPost.id,
+        title: "Title",
+        body: "Body",
+      })
       ).rejects.toThrow(`Failed to update post with ID ${mockPost.id}`);
     });
   });
@@ -434,7 +494,7 @@ describe("Post Service", () => {
       mockPostRepository.delete.mockResolvedValue(true);
 
       // When: Delete post
-      const result = await postService.deletePost(mockPost.id);
+      const result = await postService.deletePost({ id: mockPost.id });
 
       // Then: Should delete post successfully
       expect(result).toBe(true);
@@ -449,8 +509,8 @@ describe("Post Service", () => {
 
       // When: Delete post
       // Then: Should throw NotFoundError
-      await expect(postService.deletePost(postId)).rejects.toThrow(BaseError);
-      await expect(postService.deletePost(postId)).rejects.toThrow(
+      await expect(postService.deletePost({ id: postId })).rejects.toThrow(BaseError);
+      await expect(postService.deletePost({ id: postId })).rejects.toThrow(
         `Post with ID ${postId} not found`
       );
     });
@@ -464,10 +524,10 @@ describe("Post Service", () => {
 
       // When: Delete post
       // Then: Should wrap as DeleteFailedError
-      await expect(postService.deletePost(mockPost.id)).rejects.toThrow(
+      await expect(postService.deletePost({ id: mockPost.id })).rejects.toThrow(
         BaseError
       );
-      await expect(postService.deletePost(mockPost.id)).rejects.toThrow(
+      await expect(postService.deletePost({ id: mockPost.id })).rejects.toThrow(
         `Failed to delete post with ID ${mockPost.id}`
       );
     });
@@ -483,7 +543,10 @@ describe("Post Service", () => {
       mockPostRepository.like.mockResolvedValue(true);
 
       // When: Like post
-      const result = await postService.likePost(mockPost.id, mockUser.id);
+      const result = await postService.likePost({
+        id: mockPost.id,
+        userId: mockUser.id,
+      });
 
       // Then: Should like post successfully
       expect(result).toBe(true);
@@ -503,10 +566,10 @@ describe("Post Service", () => {
 
       // When: Like post
       // Then: Should throw NotFoundError for post
-      await expect(postService.likePost(postId, userId)).rejects.toThrow(
+      await expect(postService.likePost({ id: postId, userId })).rejects.toThrow(
         BaseError
       );
-      await expect(postService.likePost(postId, userId)).rejects.toThrow(
+      await expect(postService.likePost({ id: postId, userId })).rejects.toThrow(
         `Post with ID ${postId} not found`
       );
     });
@@ -520,10 +583,10 @@ describe("Post Service", () => {
 
       // When: Like post
       // Then: Should throw NotFoundError for user
-      await expect(postService.likePost(mockPost.id, userId)).rejects.toThrow(
+      await expect(postService.likePost({ id: mockPost.id, userId })).rejects.toThrow(
         BaseError
       );
-      await expect(postService.likePost(mockPost.id, userId)).rejects.toThrow(
+      await expect(postService.likePost({ id: mockPost.id, userId })).rejects.toThrow(
         `User with ID ${userId} not found`
       );
     });
@@ -540,10 +603,16 @@ describe("Post Service", () => {
       // When: Like post
       // Then: Should wrap as UpdateFailedError
       await expect(
-        postService.likePost(mockPost.id, mockUser.id)
+        postService.likePost({
+        id: mockPost.id,
+        userId: mockUser.id,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.likePost(mockPost.id, mockUser.id)
+        postService.likePost({
+        id: mockPost.id,
+        userId: mockUser.id,
+      })
       ).rejects.toThrow(`Failed to update post with ID ${mockPost.id}`);
     });
   });
@@ -558,7 +627,10 @@ describe("Post Service", () => {
       mockPostRepository.unlike.mockResolvedValue(true);
 
       // When: Unlike post
-      const result = await postService.unlikePost(mockPost.id, mockUser.id);
+      const result = await postService.unlikePost({
+        id: mockPost.id,
+        userId: mockUser.id,
+      });
 
       // Then: Should unlike post successfully
       expect(result).toBe(true);
@@ -578,10 +650,10 @@ describe("Post Service", () => {
 
       // When: Unlike post
       // Then: Should throw NotFoundError for post
-      await expect(postService.unlikePost(postId, userId)).rejects.toThrow(
+      await expect(postService.unlikePost({ id: postId, userId })).rejects.toThrow(
         BaseError
       );
-      await expect(postService.unlikePost(postId, userId)).rejects.toThrow(
+      await expect(postService.unlikePost({ id: postId, userId })).rejects.toThrow(
         `Post with ID ${postId} not found`
       );
     });
@@ -595,10 +667,10 @@ describe("Post Service", () => {
 
       // When: Unlike post
       // Then: Should throw NotFoundError for user
-      await expect(postService.unlikePost(mockPost.id, userId)).rejects.toThrow(
+      await expect(postService.unlikePost({ id: mockPost.id, userId })).rejects.toThrow(
         BaseError
       );
-      await expect(postService.unlikePost(mockPost.id, userId)).rejects.toThrow(
+      await expect(postService.unlikePost({ id: mockPost.id, userId })).rejects.toThrow(
         `User with ID ${userId} not found`
       );
     });
@@ -615,10 +687,16 @@ describe("Post Service", () => {
       // When: Unlike post
       // Then: Should wrap as UpdateFailedError
       await expect(
-        postService.unlikePost(mockPost.id, mockUser.id)
+        postService.unlikePost({
+        id: mockPost.id,
+        userId: mockUser.id,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        postService.unlikePost(mockPost.id, mockUser.id)
+        postService.unlikePost({
+        id: mockPost.id,
+        userId: mockUser.id,
+      })
       ).rejects.toThrow(`Failed to update post with ID ${mockPost.id}`);
     });
   });
@@ -634,7 +712,7 @@ describe("Post Service", () => {
 
       // When: Get all posts
       try {
-        await postService.getAllPosts();
+        await postService.getAllPosts({});
       } catch {
         // Expected to throw
       }
@@ -659,7 +737,8 @@ describe("Post Service", () => {
 
       // When: Get post by ID
       try {
-        await postService.getPostById(postId);
+        await postService.getPostById({
+        id: postId });
       } catch {
         // Expected to throw
       }
@@ -698,8 +777,9 @@ describe("Post Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue([]);
 
       // When: Call async methods
-      const getAllResult = postService.getAllPosts();
-      const getByIdResult = postService.getPostById("test-id");
+      const getAllResult = postService.getAllPosts({});
+      const getByIdResult = postService.getPostById({
+        id: "test-id" });
 
       // Then: Should return Promises
       expect(getAllResult).toBeInstanceOf(Promise);
@@ -737,7 +817,11 @@ describe("Post Service", () => {
       mockPostRepository.create.mockResolvedValue(mockPost);
 
       // When: Add post with dynamic data
-      const result = await postService.addPost(postTitle, postBody, userId);
+      const result = await postService.addPost({
+        title: postTitle,
+        body: postBody,
+        userId,
+      });
 
       // Then: Should handle dynamic data correctly
       expect(result).toEqual(PostMapper.toDto(mockPost));
@@ -761,7 +845,7 @@ describe("Post Service", () => {
       mockPostRepository.getAll.mockImplementation(() => delayedResponse);
 
       // When: Get all posts
-      const result = await postService.getAllPosts(10, 0);
+      const result = await postService.getAllPosts({ limit: 10, skip: 0 });
 
       // Then: Should handle delayed response correctly
       expect(result).toEqual({
@@ -789,7 +873,10 @@ describe("Post Service", () => {
       mockPostRepository.getAll.mockResolvedValue(mockPosts);
 
       // When: Get all posts
-      const result = await postService.getAllPosts(20, 0);
+      const result = await postService.getAllPosts({
+        limit: 20,
+        skip: 0,
+      });
 
       // Then: Should return all generated posts
       expect(result.data).toHaveLength(postCount);
@@ -807,8 +894,10 @@ describe("Post Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue(mockComments);
 
       // When: Perform multiple operations
-      await postService.getPostById(postId);
-      await postService.getPostById(postId);
+      await postService.getPostById({
+        id: postId });
+      await postService.getPostById({
+        id: postId });
 
       // Then: Verify mock state using MockHelpers
       MockHelpers.verifyMockState(
@@ -858,7 +947,8 @@ describe("Post Service", () => {
       });
 
       // When: Execute concurrent operations
-      const promises = postIds.map((postId) => postService.getPostById(postId));
+      const promises = postIds.map((postId) => postService.getPostById({
+        id: postId }));
       const results = await Promise.all(promises);
 
       // Then: Should handle all concurrent operations correctly
@@ -879,7 +969,8 @@ describe("Post Service", () => {
 
       // When: Get post by ID
       // Then: Should handle delayed error and wrap it properly
-      await expect(postService.getPostById(postId)).rejects.toThrow(BaseError);
+      await expect(postService.getPostById({
+        id: postId })).rejects.toThrow(BaseError);
     });
   });
 });

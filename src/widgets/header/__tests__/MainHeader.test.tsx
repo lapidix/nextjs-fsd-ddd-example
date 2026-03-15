@@ -4,10 +4,10 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MainHeader } from "../main-header";
 
-// Mock the useUserProfile hook
-const mockUseUserProfile = vi.fn();
+// Mock the useCurrentUserProfile hook
+const mockUseCurrentUserProfile = vi.fn();
 vi.mock("@/features/user", () => ({
-  useUserProfile: () => mockUseUserProfile(),
+  useCurrentUserProfile: () => mockUseCurrentUserProfile(),
 }));
 
 vi.mock("next/image", () => ({
@@ -43,7 +43,7 @@ describe("MainHeader Widget", () => {
   describe("Core Functionality", () => {
     it("should render MainHeader with all essential elements when user is authenticated", () => {
       // Given: User profile data is available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -65,7 +65,7 @@ describe("MainHeader Widget", () => {
 
     it("should display user profile image correctly when user has profile image", () => {
       // Given: User profile with profile image
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -87,7 +87,7 @@ describe("MainHeader Widget", () => {
   describe("Authentication States", () => {
     it("should not render when user is not authenticated", () => {
       // Given: User profile data is not available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: null,
         isLoading: false,
         error: null,
@@ -106,7 +106,7 @@ describe("MainHeader Widget", () => {
 
     it("should not render during loading state", () => {
       // Given: User profile is loading
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
@@ -125,7 +125,7 @@ describe("MainHeader Widget", () => {
 
     it("should not render when there is an error", () => {
       // Given: User profile has error
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: null,
         isLoading: false,
         error: new Error("Failed to fetch user profile"),
@@ -151,7 +151,7 @@ describe("MainHeader Widget", () => {
         profileImage: "",
       };
 
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: userWithoutImage,
         isLoading: false,
         error: null,
@@ -178,7 +178,7 @@ describe("MainHeader Widget", () => {
       ];
 
       userVariations.forEach((user) => {
-        mockUseUserProfile.mockReturnValue({
+        mockUseCurrentUserProfile.mockReturnValue({
           data: user,
           isLoading: false,
           error: null,
@@ -201,7 +201,7 @@ describe("MainHeader Widget", () => {
   describe("Hook Integration", () => {
     it("should call useUserProfile hook when component mounts", () => {
       // Given: User profile data is available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -215,7 +215,7 @@ describe("MainHeader Widget", () => {
       );
 
       // Then: useUserProfile hook should be called
-      expect(mockUseUserProfile).toHaveBeenCalledTimes(1);
+      expect(mockUseCurrentUserProfile).toHaveBeenCalledTimes(1);
     });
   });
 });

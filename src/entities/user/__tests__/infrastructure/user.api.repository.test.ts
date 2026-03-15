@@ -1,4 +1,4 @@
-import { ApiClient } from "@/shared/api";
+import { BaseHttpClient } from "@/shared/libs/http/base.api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { User } from "../../core";
 import { UserProfileDto } from "../../infrastructure/dto";
@@ -10,7 +10,7 @@ import { UserApiRepository } from "../../infrastructure/repository";
  */
 describe("User API Repository", () => {
   let userApiRepository: UserApiRepository;
-  let mockApiClient: ApiClient;
+  let mockApiClient: BaseHttpClient;
 
   beforeEach(() => {
     // Given: Set up mock API client and repository
@@ -19,7 +19,7 @@ describe("User API Repository", () => {
       post: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
-    } as unknown as ApiClient;
+    } as unknown as BaseHttpClient;
 
     userApiRepository = new UserApiRepository(mockApiClient);
   });
@@ -42,17 +42,21 @@ describe("User API Repository", () => {
       };
       vi.mocked(mockApiClient.get).mockResolvedValue(mockResponse);
 
-      // When: Get user profile
-      const result = await userApiRepository.getUserProfile();
+      // When: Get user profile by userId
+      const result = await userApiRepository.getUserProfile(
+        validUserProfileDto.id
+      );
 
-      // Then: Should return User domain object
+      // Then: Should return User domain object and call API with userId
       expect(result).toBeInstanceOf(User);
       expect(result.id).toBe(validUserProfileDto.id);
       expect(result.username).toBe(validUserProfileDto.username);
       expect(result.profileImage).toBe(validUserProfileDto.profileImage);
       expect(result.age).toBe(validUserProfileDto.age);
       expect(result.email).toBe(validUserProfileDto.email);
-      expect(mockApiClient.get).toHaveBeenCalledWith("/users/me");
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        `/users/${validUserProfileDto.id}`
+      );
     });
 
     it("should handle user profile with missing optional fields", async () => {
@@ -71,8 +75,10 @@ describe("User API Repository", () => {
       };
       vi.mocked(mockApiClient.get).mockResolvedValue(mockResponse);
 
-      // When: Get user profile
-      const result = await userApiRepository.getUserProfile();
+      // When: Get user profile by userId
+      const result = await userApiRepository.getUserProfile(
+        incompleteProfileDto.id
+      );
 
       // Then: Should return User with default values for missing fields
       expect(result).toBeInstanceOf(User);
@@ -99,8 +105,10 @@ describe("User API Repository", () => {
       };
       vi.mocked(mockApiClient.get).mockResolvedValue(mockResponse);
 
-      // When: Get user profile
-      const result = await userApiRepository.getUserProfile();
+      // When: Get user profile by userId
+      const result = await userApiRepository.getUserProfile(
+        profileDtoWithNulls.id
+      );
 
       // Then: Should return User with default values for null fields
       expect(result).toBeInstanceOf(User);
@@ -114,11 +122,56 @@ describe("User API Repository", () => {
       // Given: Mock API client throws error
       const apiError = new Error("API Error");
       vi.mocked(mockApiClient.get).mockRejectedValue(apiError);
+      const userId = "user-123";
 
-      // When & Then: Should throw the API error
-      await expect(userApiRepository.getUserProfile()).rejects.toThrow(
-        "API Error"
-      );
+      // When & Then: Should call API with userId and throw the API error
+      await expect(
+        userApiRepository.getUserProfile(userId)
+      ).rejects.toThrow("API Error");
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/users/${userId}`);
+    });
+  });
+
+  describe("getCurrentUserProfile", () => {
+    it("should return User domain object when GET /users/me succeeds", async () => {
+      // Given: Mock API client returns valid user profile for current user
+      const validUserProfileDto: UserProfileDto = {
+        id: "user-1",
+        username: "astute lee",
+        profileImage: "https://picsum.photos/seed/523/100/100",
+        age: 28,
+        email: "user@example.com",
+      };
+      const mockResponse = {
+        data: validUserProfileDto,
+        status: 200,
+        statusText: "OK",
+        ok: true,
+      };
+      vi.mocked(mockApiClient.get).mockResolvedValue(mockResponse);
+
+      // When: Get current user profile
+      const result = await userApiRepository.getCurrentUserProfile();
+
+      // Then: Should return User domain object and call GET /users/me
+      expect(result).toBeInstanceOf(User);
+      expect(result.id).toBe(validUserProfileDto.id);
+      expect(result.username).toBe(validUserProfileDto.username);
+      expect(result.profileImage).toBe(validUserProfileDto.profileImage);
+      expect(result.age).toBe(validUserProfileDto.age);
+      expect(result.email).toBe(validUserProfileDto.email);
+      expect(mockApiClient.get).toHaveBeenCalledWith("/users/me");
+    });
+
+    it("should throw when GET /users/me fails", async () => {
+      // Given: Mock API client throws error
+      const apiError = new Error("Unauthorized");
+      vi.mocked(mockApiClient.get).mockRejectedValue(apiError);
+
+      // When & Then: Should call GET /users/me and throw
+      await expect(
+        userApiRepository.getCurrentUserProfile()
+      ).rejects.toThrow("Unauthorized");
       expect(mockApiClient.get).toHaveBeenCalledWith("/users/me");
     });
   });

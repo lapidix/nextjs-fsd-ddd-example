@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 
+/** Matches UserProfileDto: id (string), username, profileImage, age?, email? */
 const generateMockUserProfile = () => {
   return {
-    id: 1,
+    id: "user-1",
     username: "astute lee",
     profileImage: "https://picsum.photos/seed/523/100/100",
-    fullName: "astute lee",
     email: "user@example.com",
     age: 28,
   };

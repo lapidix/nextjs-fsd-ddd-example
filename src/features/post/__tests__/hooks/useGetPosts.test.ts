@@ -5,7 +5,8 @@ import { BaseError } from "@/shared/libs/errors";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createUseGetPosts } from "../../hooks/useGetPosts";
-import { GetPostsOptions, PostListResult } from "../../types";
+import type { GetPostsQuery } from "../../queries";
+import type { PostListResult } from "../../results";
 
 /**
  * useGetPosts Hook Tests
@@ -82,12 +83,15 @@ describe("useGetPosts Hook", () => {
       });
 
       expect(result.current.data).toEqual(mockPostsData);
-      expect(mockPostUseCase.getAllPosts).toHaveBeenCalledWith(10, 0);
+      expect(mockPostUseCase.getAllPosts).toHaveBeenCalledWith({
+        limit: 10,
+        skip: 0,
+      });
     });
 
     it("should fetch posts with custom limit and skip", async () => {
       // Given: Custom options and mock posts data
-      const options: GetPostsOptions = { limit: 5, skip: 10 };
+      const options: GetPostsQuery = { limit: 5, skip: 10 };
       mockPostUseCase.getAllPosts.mockResolvedValue(mockPostsData);
 
       // When: Hook is called with custom options
@@ -101,12 +105,15 @@ describe("useGetPosts Hook", () => {
       });
 
       expect(result.current.data).toEqual(mockPostsData);
-      expect(mockPostUseCase.getAllPosts).toHaveBeenCalledWith(5, 10);
+      expect(mockPostUseCase.getAllPosts).toHaveBeenCalledWith({
+        limit: 5,
+        skip: 10,
+      });
     });
 
     it("should search posts when query is provided and valid", async () => {
       // Given: Search query and mock search results
-      const options: GetPostsOptions = { query: "test search" };
+      const options: GetPostsQuery = { query: "test search" };
       mockPostUseCase.searchPosts.mockResolvedValue(mockPostsData);
 
       // When: Hook is called with search query
@@ -120,16 +127,16 @@ describe("useGetPosts Hook", () => {
       });
 
       expect(result.current.data).toEqual(mockPostsData);
-      expect(mockPostUseCase.searchPosts).toHaveBeenCalledWith(
-        10,
-        0,
-        "test search"
-      );
+      expect(mockPostUseCase.searchPosts).toHaveBeenCalledWith({
+        limit: 10,
+        skip: 0,
+        query: "test search",
+      });
     });
 
     it("should not search when query is too short", async () => {
       // Given: Short query (less than 2 characters)
-      const options: GetPostsOptions = { query: "a" };
+      const options: GetPostsQuery = { query: "a" };
       mockPostUseCase.getAllPosts.mockResolvedValue(mockPostsData);
 
       // When: Hook is called with short query
@@ -142,7 +149,11 @@ describe("useGetPosts Hook", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockPostUseCase.getAllPosts).toHaveBeenCalledWith(10, 0);
+      expect(mockPostUseCase.getAllPosts).toHaveBeenCalledWith({
+        limit: 10,
+        skip: 0,
+        query: "a",
+      });
       expect(mockPostUseCase.searchPosts).not.toHaveBeenCalled();
     });
   });
@@ -187,7 +198,7 @@ describe("useGetPosts Hook", () => {
 
     it("should wrap generic errors in BaseError for search", async () => {
       // Given: Search query and generic error from searchPosts
-      const options: GetPostsOptions = { query: "test search" };
+      const options: GetPostsQuery = { query: "test search" };
       const unknownError = new Error("Search service error");
       mockPostUseCase.searchPosts.mockRejectedValue(unknownError);
 

@@ -71,7 +71,7 @@ describe("useGetCommentsByPostId Hook", () => {
       });
 
       expect(result.current.data).toEqual(mockCommentsData);
-      expect(mockCommentUseCase.getAllComments).toHaveBeenCalledWith(postId);
+      expect(mockCommentUseCase.getAllComments).toHaveBeenCalledWith({ postId });
     });
 
     it("should not execute query when post ID is empty", () => {

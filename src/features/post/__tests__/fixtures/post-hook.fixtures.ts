@@ -5,7 +5,7 @@
 
 import { CommentDto } from "@/entities/comment";
 import { PostDto } from "@/entities/post";
-import { PostDetailResult, PostListResult } from "../../types";
+import { PostDetailResult, PostListResult } from "../../results";
 
 export const mockComments: CommentDto[] = [
   {

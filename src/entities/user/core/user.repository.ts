@@ -1,5 +1,6 @@
 import { User } from "./user.domain";
 
 export interface UserRepository {
-  getUserProfile(): Promise<User>;
+  getUserProfile(userId: string): Promise<User>;
+  getCurrentUserProfile(): Promise<User>;
 }

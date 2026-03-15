@@ -1,12 +1,12 @@
 import { CommentApiRepository } from "@/entities/comment";
 import { PostApiRepository } from "@/entities/post";
 import { UserApiRepository } from "@/entities/user";
-import { apiClient } from "@/shared/api";
+import { baseHttpClient } from "@/shared/libs/http";
 import { PostService } from "./post.service";
 
 export const createPostService = () => {
-  const postRepository = new PostApiRepository(apiClient);
-  const userRepository = new UserApiRepository(apiClient);
-  const commentRepository = new CommentApiRepository(apiClient);
+  const postRepository = new PostApiRepository(baseHttpClient);
+  const userRepository = new UserApiRepository(baseHttpClient);
+  const commentRepository = new CommentApiRepository(baseHttpClient);
   return PostService(postRepository, commentRepository, userRepository);
 };

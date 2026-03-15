@@ -50,7 +50,7 @@ describe("Comment Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue(mockComments);
 
       // When: Get all comments for post
-      const result = await commentService.getAllComments(postId);
+      const result = await commentService.getAllComments({ postId });
 
       // Then: Should return mapped comment list
       expect(result).toEqual(
@@ -65,7 +65,7 @@ describe("Comment Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue([]);
 
       // When: Get all comments for post
-      const result = await commentService.getAllComments(postId);
+      const result = await commentService.getAllComments({ postId });
 
       // Then: Should return empty array
       expect(result).toEqual([]);
@@ -80,7 +80,9 @@ describe("Comment Service", () => {
 
       // When: Get all comments for post
       // Then: Should re-throw the same BaseError
-      await expect(commentService.getAllComments(postId)).rejects.toThrow(
+      await expect(
+        commentService.getAllComments({ postId })
+      ).rejects.toThrow(
         baseError
       );
     });
@@ -93,7 +95,9 @@ describe("Comment Service", () => {
 
       // When: Get all comments for post
       // Then: Should wrap error with post ID information
-      await expect(commentService.getAllComments(postId)).rejects.toThrow(
+      await expect(
+        commentService.getAllComments({ postId })
+      ).rejects.toThrow(
         `Failed to fetch comments for post ID ${postId}`
       );
     });
@@ -106,7 +110,7 @@ describe("Comment Service", () => {
       mockCommentRepository.getById.mockResolvedValue(mockComment);
 
       // When: Get comment by ID
-      const result = await commentService.getCommentById(mockComment.id);
+      const result = await commentService.getCommentById({ id: mockComment.id });
 
       // Then: Should return mapped comment
       expect(result).toEqual(CommentMapper.toDto(mockComment));
@@ -123,12 +127,12 @@ describe("Comment Service", () => {
 
       // When: Get comment by ID
       // Then: Should throw BaseError.notFound
-      await expect(commentService.getCommentById(commentId)).rejects.toThrow(
-        BaseError
-      );
-      await expect(commentService.getCommentById(commentId)).rejects.toThrow(
-        "Comment"
-      );
+      await expect(
+        commentService.getCommentById({ id: commentId })
+      ).rejects.toThrow(BaseError);
+      await expect(
+        commentService.getCommentById({ id: commentId })
+      ).rejects.toThrow("Comment");
     });
 
     it("should re-throw BaseError when repository throws BaseError", async () => {
@@ -139,9 +143,9 @@ describe("Comment Service", () => {
 
       // When: Get comment by ID
       // Then: Should re-throw the same BaseError
-      await expect(commentService.getCommentById(commentId)).rejects.toThrow(
-        baseError
-      );
+      await expect(
+        commentService.getCommentById({ id: commentId })
+      ).rejects.toThrow(baseError);
     });
   });
 
@@ -158,7 +162,11 @@ describe("Comment Service", () => {
       mockCommentRepository.create.mockResolvedValue(mockComment);
 
       // When: Add new comment
-      const result = await commentService.addComment(body, postId, userId);
+      const result = await commentService.addComment({
+        body,
+        postId,
+        userId,
+      });
 
       // Then: Should create and return new comment
       expect(result).toEqual(CommentMapper.toDto(mockComment));
@@ -188,7 +196,11 @@ describe("Comment Service", () => {
       mockCommentRepository.create.mockResolvedValue(mockComment);
 
       // When: Add new comment
-      const result = await commentService.addComment(body, postId, userId);
+      const result = await commentService.addComment({
+        body,
+        postId,
+        userId,
+      });
 
       // Then: Should create comment with empty profile image
       expect(result).toEqual(CommentMapper.toDto(mockComment));
@@ -214,10 +226,10 @@ describe("Comment Service", () => {
       // When: Add new comment
       // Then: Should throw BaseError.createFailed
       await expect(
-        commentService.addComment(body, postId, userId)
+        commentService.addComment({ body, postId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.addComment(body, postId, userId)
+        commentService.addComment({ body, postId, userId })
       ).rejects.toThrow("Failed to create comment");
     });
 
@@ -235,7 +247,7 @@ describe("Comment Service", () => {
       // When: Add new comment
       // Then: Should re-throw the same BaseError
       await expect(
-        commentService.addComment(body, postId, userId)
+        commentService.addComment({ body, postId, userId })
       ).rejects.toThrow(baseError);
     });
 
@@ -253,10 +265,10 @@ describe("Comment Service", () => {
       // When: Add new comment
       // Then: Should wrap error in BaseError.createFailed
       await expect(
-        commentService.addComment(body, postId, userId)
+        commentService.addComment({ body, postId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.addComment(body, postId, userId)
+        commentService.addComment({ body, postId, userId })
       ).rejects.toThrow("Failed to create comment");
     });
   });
@@ -279,11 +291,11 @@ describe("Comment Service", () => {
       mockCommentRepository.update.mockResolvedValue(updatedComment);
 
       // When: Update comment
-      const result = await commentService.updateComment(
-        commentId,
-        newBody,
-        userId
-      );
+      const result = await commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      });
 
       // Then: Should update and return comment
       expect(result).toEqual(CommentMapper.toDto(updatedComment));
@@ -303,10 +315,18 @@ describe("Comment Service", () => {
       // When: Update comment
       // Then: Should throw BaseError.notFound
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow("Comment");
     });
 
@@ -326,10 +346,18 @@ describe("Comment Service", () => {
       // When: Update comment
       // Then: Should throw BaseError.unauthorized
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow("You don't have permission to edit");
     });
 
@@ -351,10 +379,18 @@ describe("Comment Service", () => {
       // When: Update comment
       // Then: Should throw BaseError.updateFailed
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow("Failed to update comment with ID");
     });
 
@@ -370,7 +406,11 @@ describe("Comment Service", () => {
       // When: Update comment
       // Then: Should re-throw the same BaseError
       await expect(
-        commentService.updateComment(commentId, newBody, userId)
+        commentService.updateComment({
+        id: commentId,
+        body: newBody,
+        userId,
+      })
       ).rejects.toThrow(baseError);
     });
   });
@@ -390,7 +430,10 @@ describe("Comment Service", () => {
       mockCommentRepository.delete.mockResolvedValue(true);
 
       // When: Delete comment
-      const result = await commentService.deleteComment(commentId, userId);
+      const result = await commentService.deleteComment({
+        id: commentId,
+        userId,
+      });
 
       // Then: Should delete comment and return true
       expect(result).toBe(true);
@@ -408,10 +451,10 @@ describe("Comment Service", () => {
       // When: Delete comment
       // Then: Should throw BaseError.notFound
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow("Comment");
     });
 
@@ -430,10 +473,10 @@ describe("Comment Service", () => {
       // When: Delete comment
       // Then: Should throw BaseError.unauthorized
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow("You don't have permission to delete");
     });
 
@@ -453,10 +496,10 @@ describe("Comment Service", () => {
       // When: Delete comment
       // Then: Should throw BaseError.deleteFailed
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow("Failed to delete comment with ID");
     });
 
@@ -471,7 +514,7 @@ describe("Comment Service", () => {
       // When: Delete comment
       // Then: Should re-throw the same BaseError
       await expect(
-        commentService.deleteComment(commentId, userId)
+        commentService.deleteComment({ id: commentId, userId })
       ).rejects.toThrow(baseError);
     });
   });
@@ -485,7 +528,10 @@ describe("Comment Service", () => {
       mockCommentRepository.like.mockResolvedValue(true);
 
       // When: Like comment
-      const result = await commentService.likeComment(commentId, userId);
+      const result = await commentService.likeComment({
+        id: commentId,
+        userId,
+      });
 
       // Then: Should return true
       expect(result).toBe(true);
@@ -503,7 +549,10 @@ describe("Comment Service", () => {
       mockCommentRepository.like.mockResolvedValue(false);
 
       // When: Like comment
-      const result = await commentService.likeComment(commentId, userId);
+      const result = await commentService.likeComment({
+        id: commentId,
+        userId,
+      });
 
       // Then: Should return false
       expect(result).toBe(false);
@@ -524,7 +573,7 @@ describe("Comment Service", () => {
       // When: Like comment
       // Then: Should re-throw the same BaseError
       await expect(
-        commentService.likeComment(commentId, userId)
+        commentService.likeComment({ id: commentId, userId })
       ).rejects.toThrow(baseError);
     });
 
@@ -539,10 +588,10 @@ describe("Comment Service", () => {
       // When: Like comment
       // Then: Should wrap error in BaseError.updateFailed
       await expect(
-        commentService.likeComment(commentId, userId)
+        commentService.likeComment({ id: commentId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.likeComment(commentId, userId)
+        commentService.likeComment({ id: commentId, userId })
       ).rejects.toThrow("Failed to update comment with ID");
     });
   });
@@ -556,7 +605,10 @@ describe("Comment Service", () => {
       mockCommentRepository.unlike.mockResolvedValue(true);
 
       // When: Unlike comment
-      const result = await commentService.unlikeComment(commentId, userId);
+      const result = await commentService.unlikeComment({
+        id: commentId,
+        userId,
+      });
 
       // Then: Should return true
       expect(result).toBe(true);
@@ -574,7 +626,10 @@ describe("Comment Service", () => {
       mockCommentRepository.unlike.mockResolvedValue(false);
 
       // When: Unlike comment
-      const result = await commentService.unlikeComment(commentId, userId);
+      const result = await commentService.unlikeComment({
+        id: commentId,
+        userId,
+      });
 
       // Then: Should return false
       expect(result).toBe(false);
@@ -595,7 +650,7 @@ describe("Comment Service", () => {
       // When: Unlike comment
       // Then: Should re-throw the same BaseError
       await expect(
-        commentService.unlikeComment(commentId, userId)
+        commentService.unlikeComment({ id: commentId, userId })
       ).rejects.toThrow(baseError);
     });
 
@@ -610,10 +665,10 @@ describe("Comment Service", () => {
       // When: Unlike comment
       // Then: Should wrap error in BaseError.updateFailed
       await expect(
-        commentService.unlikeComment(commentId, userId)
+        commentService.unlikeComment({ id: commentId, userId })
       ).rejects.toThrow(BaseError);
       await expect(
-        commentService.unlikeComment(commentId, userId)
+        commentService.unlikeComment({ id: commentId, userId })
       ).rejects.toThrow("Failed to update comment with ID");
     });
   });
@@ -626,7 +681,9 @@ describe("Comment Service", () => {
 
       // When: Get comments for post
       // Then: Should handle error gracefully
-      await expect(commentService.getAllComments("post-123")).rejects.toThrow(
+      await expect(
+        commentService.getAllComments({ postId: "post-123" })
+      ).rejects.toThrow(
         "Failed to fetch comments for post ID post-123"
       );
     });
@@ -641,7 +698,7 @@ describe("Comment Service", () => {
       );
 
       // When: Get comments for post
-      const result = await commentService.getAllComments(postId);
+      const result = await commentService.getAllComments({ postId });
 
       // Then: Should handle delayed response correctly
       expect(result).toEqual(
@@ -661,7 +718,9 @@ describe("Comment Service", () => {
 
       // When: Get comments for post
       // Then: Should handle delayed error correctly
-      await expect(commentService.getAllComments(postId)).rejects.toThrow(
+      await expect(
+        commentService.getAllComments({ postId })
+      ).rejects.toThrow(
         `Failed to fetch comments for post ID ${postId}`
       );
     });
@@ -677,8 +736,8 @@ describe("Comment Service", () => {
       mockCommentRepository.unlike.mockResolvedValue(true);
 
       // When: Perform concurrent like and unlike operations
-      const likePromise = commentService.likeComment(commentId, userId);
-      const unlikePromise = commentService.unlikeComment(commentId, userId);
+      const likePromise = commentService.likeComment({ id: commentId, userId });
+      const unlikePromise = commentService.unlikeComment({ id: commentId, userId });
 
       const [likeResult, unlikeResult] = await Promise.all([
         likePromise,
@@ -700,7 +759,9 @@ describe("Comment Service", () => {
 
       // When: Get comment by ID
       // Then: Should handle malformed data gracefully
-      const result = await commentService.getCommentById("comment-123");
+      const result = await commentService.getCommentById({
+        id: "comment-123",
+      });
       expect(result).toBeDefined();
     });
   });
@@ -728,24 +789,24 @@ describe("Comment Service", () => {
 
       // When: Execute complete lifecycle
       // 1. Create comment
-      const createdComment = await commentService.addComment(
+      const createdComment = await commentService.addComment({
         body,
         postId,
-        userId
-      );
+        userId,
+      });
 
       // 2. Update comment
-      const updatedCommentResult = await commentService.updateComment(
-        mockComment.id,
-        updatedBody,
-        userId
-      );
+      const updatedCommentResult = await commentService.updateComment({
+        id: mockComment.id,
+        body: updatedBody,
+        userId,
+      });
 
       // 3. Delete comment
-      const deleteResult = await commentService.deleteComment(
-        mockComment.id,
-        userId
-      );
+      const deleteResult = await commentService.deleteComment({
+        id: mockComment.id,
+        userId,
+      });
 
       // Then: Should handle complete lifecycle correctly
       expect(createdComment).toEqual(CommentMapper.toDto(mockComment));
@@ -761,7 +822,7 @@ describe("Comment Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue(mockComments);
 
       // When: Get all comments for post
-      const result = await commentService.getAllComments(postId);
+      const result = await commentService.getAllComments({ postId });
 
       // Then: Should return all comments for post
       expect(result).toHaveLength(mockComments.length);
@@ -783,10 +844,10 @@ describe("Comment Service", () => {
       mockCommentRepository.like.mockResolvedValue(true);
 
       // When: Owner and other user perform different operations
-      const likeByOtherUser = await commentService.likeComment(
-        commentId,
-        otherUserId
-      );
+      const likeByOtherUser = await commentService.likeComment({
+        id: commentId,
+        userId: otherUserId,
+      });
 
       // Then: Should handle operations correctly based on user permissions
       expect(likeByOtherUser).toBe(true);
@@ -794,7 +855,11 @@ describe("Comment Service", () => {
       // When: Other user tries to update comment
       // Then: Should throw unauthorized error
       await expect(
-        commentService.updateComment(commentId, "Updated", otherUserId)
+        commentService.updateComment({
+          id: commentId,
+          body: "Updated",
+          userId: otherUserId,
+        })
       ).rejects.toThrow(BaseError);
     });
   });
@@ -831,11 +896,11 @@ describe("Comment Service", () => {
       mockCommentRepository.create.mockResolvedValue(mockComment);
 
       // When: Add comment with dynamic data
-      const result = await commentService.addComment(
-        commentBody,
+      const result = await commentService.addComment({
+        body: commentBody,
         postId,
-        userId
-      );
+        userId,
+      });
 
       // Then: Should handle dynamic data correctly
       expect(result).toEqual(CommentMapper.toDto(mockComment));
@@ -873,7 +938,7 @@ describe("Comment Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue(mockComments);
 
       // When: Get all comments for post
-      const result = await commentService.getAllComments(postId);
+      const result = await commentService.getAllComments({ postId });
 
       // Then: Should return all generated comments
       expect(result).toHaveLength(commentCount);
@@ -888,8 +953,8 @@ describe("Comment Service", () => {
       mockCommentRepository.getByPostId.mockResolvedValue(mockComments);
 
       // When: Perform multiple operations
-      await commentService.getAllComments(postId);
-      await commentService.getAllComments(postId);
+      await commentService.getAllComments({ postId });
+      await commentService.getAllComments({ postId });
 
       // Then: Verify mock state using MockHelpers
       MockHelpers.verifyMockState(
@@ -923,7 +988,7 @@ describe("Comment Service", () => {
 
       // When: Execute concurrent operations
       const promises = postIds.map((postId) =>
-        commentService.getAllComments(postId)
+        commentService.getAllComments({ postId })
       );
       const results = await Promise.all(promises);
 

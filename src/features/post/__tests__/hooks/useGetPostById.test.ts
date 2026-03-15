@@ -53,7 +53,7 @@ describe("useGetPostById Hook", () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
         expect(result.current.data).toEqual(mockPostDetailData);
-        expect(mockPostUseCase.getPostById).toHaveBeenCalledWith(postId);
+        expect(mockPostUseCase.getPostById).toHaveBeenCalledWith({ id: postId });
       });
     });
 

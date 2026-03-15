@@ -1,13 +1,13 @@
-import { ApiResponse } from "../types/api.types";
+import type { ApiResponse } from "../../types";
 
-interface ApiConfig extends RequestInit {
+interface BaseHttpConfig extends RequestInit {
   baseURL: string;
 }
 
-export class ApiClient {
+export class BaseHttpClient {
   private baseURL: string;
 
-  constructor(config: ApiConfig) {
+  constructor(config: BaseHttpConfig) {
     this.baseURL = config.baseURL;
   }
 
@@ -114,7 +114,3 @@ export class ApiClient {
     return this.request<T>(url, { ...config, method: "DELETE" });
   }
 }
-
-export const apiClient = new ApiClient({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api",
-});

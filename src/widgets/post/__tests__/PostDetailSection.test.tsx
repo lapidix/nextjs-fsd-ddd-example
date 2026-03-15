@@ -8,11 +8,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PostDetailSection } from "../post-detail-section";
 
 // Mock the hooks
-const mockUseUserProfile = vi.fn();
+const mockUseCurrentUserProfile = vi.fn();
 const mockUseGetPostById = vi.fn();
 
 vi.mock("@/features/user", () => ({
-  useUserProfile: () => mockUseUserProfile(),
+  useCurrentUserProfile: () => mockUseCurrentUserProfile(),
 }));
 
 vi.mock("@/features/post", () => ({
@@ -95,7 +95,7 @@ describe("PostDetailSection Widget", () => {
   describe("Core Functionality", () => {
     it("should render PostDetailSection with all essential elements when data is available", () => {
       // Given: User profile and post data are available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -133,7 +133,7 @@ describe("PostDetailSection Widget", () => {
 
     it("should display post image with correct attributes when post data is available", () => {
       // Given: User profile and post data are available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -165,7 +165,7 @@ describe("PostDetailSection Widget", () => {
 
     it("should render all comments when post has multiple comments", () => {
       // Given: User profile and post data with multiple comments are available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -196,7 +196,7 @@ describe("PostDetailSection Widget", () => {
   describe("Authentication States", () => {
     it("should not render when user profile is not available", () => {
       // Given: User profile is not available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: null,
         isLoading: false,
         error: null,
@@ -221,7 +221,7 @@ describe("PostDetailSection Widget", () => {
 
     it("should not render when post data is not available", () => {
       // Given: Post data is not available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -246,7 +246,7 @@ describe("PostDetailSection Widget", () => {
 
     it("should not render during loading states", () => {
       // Given: Data is loading
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
@@ -273,7 +273,7 @@ describe("PostDetailSection Widget", () => {
   describe("Hook Integration", () => {
     it("should call useGetPostById hook with correct postId when component is mounted", () => {
       // Given: User profile and post data are available
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -298,7 +298,7 @@ describe("PostDetailSection Widget", () => {
 
     it("should call useGetPostById with different postId when postId prop changes", () => {
       // Given: Initial render with first postId
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -338,7 +338,7 @@ describe("PostDetailSection Widget", () => {
         body: "",
       };
 
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -370,7 +370,7 @@ describe("PostDetailSection Widget", () => {
         comments: [],
       };
 
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: mockUserProfile,
         isLoading: false,
         error: null,
@@ -406,7 +406,7 @@ describe("PostDetailSection Widget", () => {
         profileImage: "",
       };
 
-      mockUseUserProfile.mockReturnValue({
+      mockUseCurrentUserProfile.mockReturnValue({
         data: userWithoutImage,
         isLoading: false,
         error: null,
