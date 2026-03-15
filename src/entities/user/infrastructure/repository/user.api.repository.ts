@@ -1,6 +1,6 @@
-import { User, UserRepository } from "@/entities/user/core";
-import { UserAdapter } from "@/entities/user/infrastructure/api";
-import { UserMapper } from "@/entities/user/mapper";
+import { User, UserRepository } from "../../core";
+import { UserAdapter } from "../api";
+import { UserMapper } from "../../mapper";
 import { ApiClient } from "@/shared/api";
 
 export class UserApiRepository implements UserRepository {

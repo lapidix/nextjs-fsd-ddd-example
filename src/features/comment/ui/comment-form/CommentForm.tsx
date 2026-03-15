@@ -1,4 +1,4 @@
-import { UserAvatar } from "@/entities/user/ui/identifier";
+import { UserAvatar } from "@/entities/user/ui";
 import { Input } from "@/shared/ui/input";
 
 interface CommentFormProps extends React.HTMLAttributes<HTMLFormElement> {

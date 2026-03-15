@@ -1,4 +1,4 @@
-import { CommentEntity, UserReference } from "@/entities/comment/types";
+import { CommentEntity, UserReference } from "../types";
 import { CommentBody, UserReferenceVO } from "../value-objects";
 
 export class Comment implements CommentEntity {

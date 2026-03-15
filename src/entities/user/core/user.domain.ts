@@ -1,4 +1,4 @@
-import { UserEntity } from "@/entities/user/types/user.types";
+import { UserEntity } from "../types/user.types";
 import { BaseError } from "@/shared/libs/errors";
 
 export class User implements UserEntity {

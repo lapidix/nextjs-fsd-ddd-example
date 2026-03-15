@@ -1,5 +1,5 @@
-import { ValueObject } from "@/shared/domain/value-object";
-import { BaseError } from "@/shared/libs/errors/base-error";
+import { ValueObject } from "@/shared/domain";
+import { BaseError } from "@/shared/libs/errors";
 import { UserReference } from "../types";
 
 export class UserReferenceVO extends ValueObject<UserReference> {

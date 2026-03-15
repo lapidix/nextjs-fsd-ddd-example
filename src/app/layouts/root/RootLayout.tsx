@@ -1,4 +1,4 @@
-import { TanstackQueryProvider } from "@/app/provider/tanstack-query";
+import { TanstackQueryProvider } from "../../provider/tanstack-query";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../../styles/globals.css";
 

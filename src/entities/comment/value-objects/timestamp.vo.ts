@@ -1,4 +1,4 @@
-import { ValueObject } from "@/shared/domain/value-object";
+import { ValueObject } from "@/shared/domain";
 
 export class Timestamp extends ValueObject<Date> {
   constructor(value: Date | number = new Date()) {

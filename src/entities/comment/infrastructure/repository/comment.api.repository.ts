@@ -1,7 +1,7 @@
-import { CommentMapper } from "@/entities/comment/mapper";
 import { ApiClient } from "@/shared/api";
 import { Comment, CommentRepository } from "../../core";
-import { CommentAdapter } from "../api/comment.adapter";
+import { CommentMapper } from "../../mapper";
+import { CommentAdapter } from "../api";
 import { CommentDto } from "../dto";
 
 export class CommentApiRepository implements CommentRepository {

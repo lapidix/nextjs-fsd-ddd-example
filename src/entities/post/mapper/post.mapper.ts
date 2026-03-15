@@ -1,4 +1,4 @@
-import { Post } from "@/entities/post/core";
+import { Post } from "../core";
 import { PostDto } from "../infrastructure/dto";
 import { PostEntity } from "../types";
 

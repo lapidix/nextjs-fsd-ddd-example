@@ -1,4 +1,4 @@
-import { Post } from "@/entities/post/core/post.domain";
+import { Post } from "./post.domain";
 
 export interface PostRepository {
   getAll(limit?: number, skip?: number): Promise<Post[]>;

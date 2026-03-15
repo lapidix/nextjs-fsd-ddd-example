@@ -1,4 +1,4 @@
-import { UserReference } from "@/entities/comment/types";
+import { UserReference } from "../../types";
 
 export type CommentDto = {
   id: string;

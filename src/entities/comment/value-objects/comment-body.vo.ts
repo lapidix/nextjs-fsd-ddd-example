@@ -1,4 +1,4 @@
-import { ValueObject } from "@/shared/domain/value-object";
+import { ValueObject } from "@/shared/domain";
 
 export class CommentBody extends ValueObject<string> {
   private static readonly MAX_LENGTH = 100;

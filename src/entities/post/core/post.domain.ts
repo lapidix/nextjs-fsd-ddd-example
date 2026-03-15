@@ -1,4 +1,4 @@
-import { PostEntity, UserReference } from "@/entities/post/types";
+import { PostEntity, UserReference } from "../types";
 
 export class Post implements PostEntity {
   private _id: string;

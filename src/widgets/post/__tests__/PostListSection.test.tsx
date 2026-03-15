@@ -3,7 +3,7 @@ import type { PostDto } from "@/entities/post";
 import { FullWrapper } from "@/shared/libs/__tests__";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockPostsData } from "../../../features/post/__tests__";
+import { mockPostsData } from "@/features/post/__tests__";
 import { PostListSection } from "../post-list-section";
 
 // Mock the useGetPosts hook
