@@ -91,20 +91,20 @@ export const PostService = (
   },
 
   addPost: async (command: AddPostCommand): Promise<PostResult> => {
-    const { title, body, userId, image } = command;
+    const { title, body, image } = command;
     try {
-      const user = await userRepository.getUserProfile(userId);
+      const user = await userRepository.getCurrentUserProfile();
       if (!user) {
-        throw BaseError.notFound("User", userId);
+        throw BaseError.notFound("User", "current");
       }
 
       const newPost = PostFactory.createNew(
         title,
         body,
         {
-          id: userId,
+          id: user.id,
           username: user.username,
-          profileImage: user.profileImage || "",
+          profileImage: user.profileImage,
         },
         image
       );
@@ -176,7 +176,7 @@ export const PostService = (
         throw BaseError.notFound("Post", id);
       }
 
-      const user = await userRepository.getUserProfile(userId);
+      const user = await userRepository.getCurrentUserProfile();
       if (!user) {
         throw BaseError.notFound("User", userId);
       }
@@ -202,9 +202,9 @@ export const PostService = (
         throw BaseError.notFound("Post", id);
       }
 
-      const user = await userRepository.getUserProfile(userId);
+      const user = await userRepository.getCurrentUserProfile();
       if (!user) {
-        throw BaseError.notFound("User", userId);
+        throw BaseError.notFound("User", "current");
       }
 
       return await postRepository.unlike(id, userId);

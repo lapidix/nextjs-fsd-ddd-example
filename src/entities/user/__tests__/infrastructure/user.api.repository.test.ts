@@ -1,4 +1,4 @@
-import { BaseHttpClient } from "@/shared/libs/http/base.api";
+import { BaseHttpClient } from "@/shared/libs/http/base.http";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { User } from "../../core";
 import { UserProfileDto } from "../../infrastructure/dto";
@@ -125,9 +125,9 @@ describe("User API Repository", () => {
       const userId = "user-123";
 
       // When & Then: Should call API with userId and throw the API error
-      await expect(
-        userApiRepository.getUserProfile(userId)
-      ).rejects.toThrow("API Error");
+      await expect(userApiRepository.getUserProfile(userId)).rejects.toThrow(
+        "API Error"
+      );
       expect(mockApiClient.get).toHaveBeenCalledWith(`/users/${userId}`);
     });
   });
@@ -169,9 +169,9 @@ describe("User API Repository", () => {
       vi.mocked(mockApiClient.get).mockRejectedValue(apiError);
 
       // When & Then: Should call GET /users/me and throw
-      await expect(
-        userApiRepository.getCurrentUserProfile()
-      ).rejects.toThrow("Unauthorized");
+      await expect(userApiRepository.getCurrentUserProfile()).rejects.toThrow(
+        "Unauthorized"
+      );
       expect(mockApiClient.get).toHaveBeenCalledWith("/users/me");
     });
   });

@@ -1,4 +1,4 @@
-import { BaseHttpClient } from "./base.api";
+import { BaseHttpClient } from "./base.http";
 
 export type { BaseHttpClient };
 export const baseHttpClient = new BaseHttpClient({

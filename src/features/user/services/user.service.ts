@@ -2,7 +2,7 @@ import { UserMapper, UserRepository } from "@/entities/user";
 import { BaseError } from "@/shared/libs/errors";
 import type { GetUserProfileQuery } from "../queries";
 import type { UserProfileResult } from "../results";
-import type { UserUseCase } from "../usecase/user.usecase";
+import type { UserUseCase } from "../usecase";
 
 export const UserService = (userRepository: UserRepository): UserUseCase => ({
   getUserProfile: async (
@@ -34,10 +34,7 @@ export const UserService = (userRepository: UserRepository): UserUseCase => ({
       if (error instanceof BaseError) {
         throw error;
       }
-      throw new BaseError(
-        "Failed to fetch current user profile",
-        "FetchError"
-      );
+      throw new BaseError("Failed to fetch current user profile", "FetchError");
     }
   },
 });
